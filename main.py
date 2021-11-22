@@ -8,12 +8,12 @@ import PreProcessing
 import Classifier
 import Plotter
 
-####################
-# Customize the ui #
-####################
+#################################################
+# Build and customize the ui: Main and side bar #
+#################################################
 
 # Set page config
-apptitle = 'Classifier App'
+apptitle = "Classifier App"
 st.set_page_config(page_title=apptitle, page_icon=":eyeglasses:")
 
 # Hide the menu bar
@@ -22,18 +22,12 @@ st.markdown(""" <style>
 footer {visibility: hidden;}
 </style> """, unsafe_allow_html=True)
 
-######################
-# Build the ui: Main #
-######################
-
+# Name and the header of the web app
 st.write("""
 # Classification Web Application
-This web app allows users to train a classification model on input data.
+This web app allows users to train a classification model on input data. Please note that users can tune some \
+frequently altered parameters to get the maximum accuracy.
 """)
-
-##########################
-# Build the ui: Side bar #
-##########################
 
 # Set the sidebar header
 st.sidebar.title("User Input Parameters")
@@ -42,23 +36,53 @@ st.sidebar.title("User Input Parameters")
 # Handle Data #
 ###############
 
+# Data input
 st.sidebar.header("Input Data")
 example_data = "https://raw.githubusercontent.com/jkkbuddika/classifier_webapp/main/data/breast_cancer.csv"
 st.sidebar.markdown(f"""[Example CSV Input File]({example_data})""")
 
 # Upload data
 uploaded_data = st.sidebar.file_uploader("Upload your CSV Input File", type=["csv"])
+st.subheader("Input Data")
 
 # Handle data if not uploaded
 if uploaded_data is not None:
     data_set = pd.read_csv(uploaded_data)
+
 else:
-    st.write("Using example data as input: Breast cancer data set from UCI ML Repository")
-    with st.expander("See notes"):
+    st.markdown("""Using example data as input: **Breast cancer** data set from UCI ML Repository""")
+    with st.expander("Read details about the data set"):
         st.markdown("""
-        Details about the data set!
+        The example data set was adapted from the UCL Breast Cancer Wisconsin (Original) Data Set. \
+        To read details about the data set please click \
+        [here](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29).
+        
+        **Attribute Information:**
+
+        1. Sample code number: id number
+        2. Clump Thickness: 1 - 10
+        3. Uniformity of Cell Size: 1 - 10
+        4. Uniformity of Cell Shape: 1 - 10
+        5. Marginal Adhesion: 1 - 10
+        6. Single Epithelial Cell Size: 1 - 10
+        7. Bare Nuclei: 1 - 10
+        8. Bland Chromatin: 1 - 10
+        9. Normal Nucleoli: 1 - 10
+        10. Mitoses: 1 - 10
+        11. Class: 2 for benign, 4 for malignant
+
+        **Note:** The sample code number has been removed when creating the example data set. Moreover, \
+        the provided example data set has been pre-processed.
         """)
     data_set = pd.read_csv(example_data)
+
+# Print input data summary
+st.markdown(f"""
+**Input data summary**
+
+- Number of features: {len(data_set.columns)}
+- Number of instances: {len(data_set)}
+""")
 
 # Handle classifier
 def classifier_algorithm():
@@ -73,11 +97,13 @@ def classifier_algorithm():
     parameters = pd.DataFrame(input_para, index=["Parameters"])
     return parameters
 
-# Train and evaluate the classification model
+# Classification algorithm
 cla_algo = classifier_algorithm()
 cla_algo = cla_algo.iloc[0, 0]
 st.subheader("Classifier and Parameters")
 st.markdown(f"""**Classifier:** {cla_algo}""")
+
+# Train the model and predict using test data
 classifier = Classifier.Classifier(cla_algo, data_set)
 model = classifier.build_predict_accuracy()
 

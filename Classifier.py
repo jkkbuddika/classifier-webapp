@@ -109,4 +109,5 @@ class Classifier:
                                   columns=["Predicted: No", "Predicted: Yes"],
                                   index=["Actual: No", "Actual: Yes"])
         accuracy = accuracy_score(unscaled_feature[3], y_pred)
+
         return con_matrix, accuracy
