@@ -7,14 +7,14 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score
 import streamlit as st
 import pandas as pd
-import PreProcessing
+import PreProcessor
 
 class Classifier:
     def __init__(self, clf_name, data_set):
         self.clf_name = clf_name
         self.data_set = data_set
         self.classifier = None
-        self.pre_process = PreProcessing.PreProcessing(self.data_set)
+        self.pre_process = PreProcessor.PreProcessor(self.data_set)
 
     def classifier_param(self):
         param = dict()
