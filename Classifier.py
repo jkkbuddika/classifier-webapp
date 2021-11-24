@@ -24,7 +24,6 @@ class Classifier:
         '''
         Allows users to change parameters using the web interface
         '''
-
         # Create a parameter dictionary
         param = dict()
         st.sidebar.subheader("Tune Parameters")
