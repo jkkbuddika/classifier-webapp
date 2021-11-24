@@ -1,6 +1,8 @@
 ############################################
-# Classifier web application               #
-# Written by Kasun Buddika                 #
+# Title     : Classifier web application   #
+# Author    : Kasun Buddika                #
+# Contact   : jkkbuddika@gmail.com         #
+# Date      : 11/2021                      #
 ############################################
 
 ####################
