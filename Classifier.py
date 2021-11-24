@@ -5,11 +5,15 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import cross_val_score
 import streamlit as st
 import pandas as pd
 import PreProcessor
 
 class Classifier:
+    '''
+    Classification model training and model accuracy prediction
+    '''
     def __init__(self, clf_name, data_set):
         self.clf_name = clf_name
         self.data_set = data_set
@@ -17,8 +21,14 @@ class Classifier:
         self.pre_process = PreProcessor.PreProcessor(self.data_set)
 
     def classifier_param(self):
+        '''
+        Allows users to change parameters using the web interface
+        '''
+
+        # Create a parameter dictionary
         param = dict()
         st.sidebar.subheader("Tune Parameters")
+
         if self.clf_name == "Logistic Regression":
             st.sidebar.markdown("""**Note:** Only following parameters can be tuned""")
             random_state = st.sidebar.slider("Random State", 0, 100, 0)
@@ -65,7 +75,11 @@ class Classifier:
         return param
 
     def set_classifier(self):
+        '''
+        Allows parameter tuning for the classification algorithm of choice
+        '''
         param = self.classifier_param()
+
         if self.clf_name == "Logistic Regression":
             self.classifier = LogisticRegression(random_state=param["random_state"])
 
@@ -99,15 +113,30 @@ class Classifier:
         return self.classifier
 
     def build_predict_accuracy(self):
+        '''
+        Fits, predicts and computes the accuracy of the final model
+        '''
         unscaled_feature = self.pre_process.split_data()
         scaled_feature = self.pre_process.feature_scale()
+
+        # Fit the model
         classifier = self.set_classifier()
         classifier.fit(scaled_feature[0], unscaled_feature[2])
+
+        # Predict test data using the fitted model
         y_pred = classifier.predict(scaled_feature[1])
 
+        # Confusion matrix
         con_matrix = pd.DataFrame(confusion_matrix(unscaled_feature[3], y_pred),
                                   columns=["Predicted: No", "Predicted: Yes"],
                                   index=["Actual: No", "Actual: Yes"])
+
+        # Accuracy score
         accuracy = accuracy_score(unscaled_feature[3], y_pred)
 
-        return con_matrix, accuracy
+        # K-fold cross validation
+        k_fold_accuracy = cross_val_score(estimator=classifier, X=scaled_feature[0], y=unscaled_feature[2], cv=10)
+        k_fold_mean = k_fold_accuracy.mean() * 100
+        k_fold_std = k_fold_accuracy.std() * 100
+
+        return con_matrix, accuracy, k_fold_mean, k_fold_std

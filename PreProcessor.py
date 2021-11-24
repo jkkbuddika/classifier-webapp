@@ -34,7 +34,7 @@ class PreProcessor:
         variables = self.split_attributes()
         X = variables[0]
         y = variables[1]
-        features_projected = pca.fit_transform(variables[0], y=None)
+        features_projected = pca.fit_transform(X, y=None)
         features_PC1 = features_projected[:, 0]
         features_PC2 = features_projected[:, 1]
 

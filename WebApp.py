@@ -1,7 +1,11 @@
+############################################
+# Classifier web application               #
+# Written by Kasun Buddika                 #
+############################################
+
 ####################
 # Import libraries #
 ####################
-
 import streamlit as st
 import pandas as pd
 import PreProcessor
@@ -45,6 +49,15 @@ st.sidebar.markdown(f"""[Example CSV Input File]({example_data})""")
 uploaded_data = st.sidebar.file_uploader("Upload your CSV Input File", type=["csv"])
 st.subheader("Input Data")
 
+# Input data preparation guide
+with st.sidebar.expander("Read details about input data preparation"):
+    st.markdown("""
+    Classifier algorithms require a matrix of features and a dependent variable vector (aka target variable vector). \
+    During the initial phase the web app creates these internally. The pre-processing algorithm \
+    assumes that the **last column** is the **dependent variable** and all the other columns to the left are \
+    features. Please make sure the CSV input file follow this organization.
+    """)
+
 # Handle data if not uploaded
 if uploaded_data is not None:
     data_set = pd.read_csv(uploaded_data)
@@ -80,9 +93,13 @@ else:
 st.markdown(f"""
 **Input data summary**
 
-- Number of features: {len(data_set.columns)}
+- Number of features: {len(data_set.columns) - 1}
 - Number of instances: {len(data_set)}
 """)
+
+######################################################
+# Build, train visualize and assess classifier model #
+######################################################
 
 # Handle classifier
 def classifier_algorithm():
@@ -112,6 +129,8 @@ st.subheader("Model Accuracy")
 st.markdown(f"""**Confusion Matrix:**""")
 st.write(model[0])
 st.markdown(f"""**Accuracy Score:** {round(model[1], 5)}""")
+st.markdown(f"""**K-Fold Mean Accuracy:** {round(model[2], 2)}""")
+st.markdown(f"""**K-Fold Accuracy SD:** {round(model[3], 2)}""")
 
 # Visualize data using dimension reduction
 st.subheader("Visualization following Dimension Reduction")
@@ -122,6 +141,10 @@ plot = Plotter.Plotter(x_data=prin_comp[0], y_data=prin_comp[1],
                        x_label="PC1", y_label="PC2",
                        color_array=prin_comp[3], color_map="Dark2")
 plot.plot_scatter()
+
+#################################
+# Miscellaneous: Self promotion #
+#################################
 
 # Add social media information
 st.write("""[![Star](https://img.shields.io/github/stars/jkkbuddika/classifier_webapp.svg?logo=github&style=social)](https://gitHub.com/jkkbuddika/classifier_webapp) \
